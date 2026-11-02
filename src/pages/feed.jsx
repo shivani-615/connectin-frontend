@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { API_URL, getMediaUrl } from '../lib/api';
 
 export default function FeedPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function FeedPage() {
     const fetchPosts = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/posts", {
+        const res = await axios.get(`${API_URL}/posts`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setPosts(res.data);
@@ -52,7 +53,7 @@ export default function FeedPage() {
         formData.append('image', selectedImage);
       }
 
-      const res = await axios.post("http://localhost:5000/posts", formData, {
+      const res = await axios.post(`${API_URL}/posts`, formData, {
         headers: { 
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -69,7 +70,7 @@ export default function FeedPage() {
 
   const handleLike = async (postId) => {
     try {
-      const res = await axios.put(`http://localhost:5000/posts/${postId}/like`);
+      const res = await axios.put(`${API_URL}/posts/${postId}/like`);
       setPosts(posts.map(post => (post._id === postId ? res.data : post)));
     } catch (err) {
       console.error("Error liking post:", err);
@@ -83,7 +84,7 @@ export default function FeedPage() {
 
     try {
       const currentUserName = localStorage.getItem("userName") || "User";
-      const res = await axios.post(`http://localhost:5000/posts/${postId}/comment`, {
+      const res = await axios.post(`${API_URL}/posts/${postId}/comment`, {
         text: commentText,
         author: currentUserName
       });
@@ -95,7 +96,7 @@ export default function FeedPage() {
   };
 
   const handleShare = (postId) => {
-    navigator.clipboard.writeText(`http://localhost:3000/posts/${postId}`);
+    navigator.clipboard.writeText(`${window.location.origin}/posts/${postId}`);
     alert("Post link copied to clipboard!");
   };
 
@@ -157,7 +158,7 @@ export default function FeedPage() {
                 
                 {post.media && (
                   <div style={{ marginBottom: '12px' }}>
-                    <img src={post.media} alt="Post media" style={{ maxWidth: '100%', borderRadius: '4px', maxHeight: '300px', objectFit: 'cover' }} />
+                    <img src={getMediaUrl(post.media)} alt="Post media" style={{ maxWidth: '100%', borderRadius: '4px', maxHeight: '300px', objectFit: 'cover' }} />
                   </div>
                 )}
 

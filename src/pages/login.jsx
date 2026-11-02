@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { API_URL } from "../lib/api";
 
 function Login() {
   const router = useRouter();
@@ -21,7 +22,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/login", formData);
+      const res = await axios.post(`${API_URL}/login`, formData);
       if (res.status === 200) {
         if (res.data.token) {
           localStorage.setItem("token", res.data.token);

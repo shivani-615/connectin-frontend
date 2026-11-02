@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import { API_URL } from '../lib/api';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -11,13 +12,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const postsRes = await axios.get("http://localhost:5000/posts");
+        const postsRes = await axios.get(`${API_URL}/posts`);
         const fetchedPosts = postsRes.data;
         setPosts(fetchedPosts);
 
         // Fetch users from backend DB if available, or build registered users dynamically from unique post authors
         try {
-          const usersRes = await axios.get("http://localhost:5000/users");
+          const usersRes = await axios.get(`${API_URL}/users`);
           setUsers(usersRes.data);
         } catch (e) {
           // Dynamic fallback: Collect all unique authors who have created posts in the platform
@@ -42,7 +43,7 @@ export default function AdminDashboard() {
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to remove this inappropriate post?")) return;
     try {
-      await axios.delete(`http://localhost:5000/posts/${postId}`);
+      await axios.delete(`${API_URL}/posts/${postId}`);
       setPosts(posts.filter(post => (post._id || post.id) !== postId));
     } catch (err) {
       console.error("Error deleting post:", err);
